@@ -1,6 +1,6 @@
-// 🔮 Proxy IA Financeira - Versão Final (Render + OpenAI)
+// 🔮 Proxy IA Financeira — Versão Final GPT Ativo
 // Autor: A / A
-// Função: conectar Google Sheets ao modelo GPT via proxy seguro
+// Função: intermediar o Google Sheets e a API da OpenAI
 
 import express from "express";
 import cors from "cors";
@@ -10,12 +10,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ✅ Rota básica para teste
+// ✅ Teste básico
 app.get("/", (req, res) => {
-  res.send("🚀 Proxy IA Financeira ativo e operacional!");
+  res.send("🚀 Proxy IA Financeira está online e pronto para análises!");
 });
 
-// ✅ Rota principal: recebe o prompt da planilha e chama a OpenAI
+// ✅ Endpoint principal
 app.post("/analisar", async (req, res) => {
   try {
     const { prompt } = req.body;
@@ -23,10 +23,15 @@ app.post("/analisar", async (req, res) => {
       return res.status(400).json({ erro: "Campo 'prompt' é obrigatório." });
     }
 
-    // 🔐 Chave da OpenAI (defina no Render como variável de ambiente)
+    // 🔐 A chave da OpenAI é lida das variáveis de ambiente do Render
     const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+    if (!OPENAI_API_KEY) {
+      return res
+        .status(500)
+        .json({ erro: "OPENAI_API_KEY não configurada no servidor." });
+    }
 
-    // ⚙️ Chamada à API da OpenAI
+    // ⚙️ Envio do prompt à OpenAI
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -39,12 +44,15 @@ app.post("/analisar", async (req, res) => {
           {
             role: "system",
             content:
-              "Você é um consultor financeiro pessoal carismático que cria relatórios curtos, humanos e úteis com base em planilhas mensais.",
+              "Você é um consultor financeiro humano, empático e estratégico. Sua missão é gerar relatórios curtos, claros e inteligentes com base em planilhas mensais de gastos.",
           },
-          { role: "user", content: prompt },
+          {
+            role: "user",
+            content: prompt,
+          },
         ],
-        temperature: 0.8,
-        max_tokens: 700,
+        temperature: 0.75,
+        max_tokens: 750,
       }),
     });
 
@@ -57,18 +65,21 @@ app.post("/analisar", async (req, res) => {
 
     const respostaIA = data.choices?.[0]?.message?.content?.trim();
     if (!respostaIA) {
-      return res.status(500).json({ erro: "A IA não retornou resposta válida." });
+      return res
+        .status(500)
+        .json({ erro: "A IA não retornou resposta válida." });
     }
 
+    // ✅ Retorna o texto limpo
     res.json({ resposta: respostaIA });
   } catch (erro) {
-    console.error("Erro interno no servidor:", erro);
+    console.error("Erro interno:", erro);
     res.status(500).json({ erro: "Erro interno no servidor." });
   }
 });
 
 // ✅ Porta padrão Render
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`⚡ Proxy IA Financeira rodando publicamente na porta ${PORT}`);
-});
+app.listen(PORT, "0.0.0.0", () =>
+  console.log(`⚡ Proxy IA Financeira rodando na porta ${PORT}`)
+);
