@@ -86,7 +86,7 @@ app.post("/analisar", async (req, res) => {
     }
 
     // ✅ Retorno final
-    res.json({ resposta: respostaIA });
+    res.send(respostaIA);
   } catch (erro) {
     console.error("💥 Erro interno:", erro);
     res.status(500).json({ erro: "Erro interno no servidor." });
