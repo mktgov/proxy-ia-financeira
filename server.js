@@ -25,6 +25,7 @@ app.post("/analisar", async (req, res) => {
 
     // 🔐 A chave da OpenAI é lida das variáveis de ambiente do Render
     const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+    console.log("🔑 OPENAI_API_KEY detectada:", !!OPENAI_API_KEY);
     if (!OPENAI_API_KEY) {
       return res
         .status(500)
